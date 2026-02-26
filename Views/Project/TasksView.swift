@@ -49,7 +49,7 @@ struct TaskRow: View {
             } label: {
                 Image(systemName: task.isCompleted ? "checkmark.circle.fill" : "circle")
                     .font(.title2)
-                    .foregroundStyle(task.isCompleted ? Color.accentColor : .secondary)
+                    .foregroundStyle(task.isCompleted ? Color.appTheme : .secondary)
             }
             .buttonStyle(.plain)
             

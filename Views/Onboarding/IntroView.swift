@@ -38,7 +38,7 @@ struct IntroView: View {
                 HStack(spacing: 10) {
                     ForEach(0..<3) { index in
                         Capsule()
-                            .fill(currentPage == index ? Color.accentColor : Color.accentColor.opacity(0.2))
+                            .fill(currentPage == index ? Color.appTheme : Color.appTheme.opacity(0.2))
                             .frame(width: currentPage == index ? 28 : 8, height: 8)
                             .animation(.spring(response: 0.4, dampingFraction: 0.7), value: currentPage)
                     }
@@ -67,7 +67,7 @@ struct IntroView: View {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(Color.accentColor)
+                    .background(Color.appTheme)
                     .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
             .padding(.horizontal, 24)
@@ -87,7 +87,7 @@ struct IntroPage: View {
             
             Image(systemName: icon)
                 .font(.system(size: 90))
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(Color.appTheme)
                 .symbolRenderingMode(.hierarchical)
             
             VStack(spacing: 16) {

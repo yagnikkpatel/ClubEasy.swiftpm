@@ -186,7 +186,7 @@ struct AddStudentView: View {
                     .overlay(alignment: .bottomTrailing) {
                         ZStack {
                             Circle()
-                                .fill(Color.accentColor)
+                                .fill(Color.appTheme)
                                 .frame(width: 24, height: 24)
                             Image(systemName: "pencil")
                                 .font(.system(size: 10, weight: .medium))
@@ -274,7 +274,7 @@ struct AddStudentView: View {
                     }
                 }
                 .fontWeight(.medium)
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(Color.appTheme)
                 .disabled(customSkillText.trimmingCharacters(in: .whitespaces).isEmpty)
             }
             ForEach(selectedSkills.sorted(), id: \.self) { skill in
@@ -354,7 +354,7 @@ struct SkillRowView: View {
                 Spacer()
                 if isSelected {
                     Image(systemName: "checkmark")
-                        .foregroundStyle(Color.accentColor)
+                        .foregroundStyle(Color.appTheme)
                 }
             }
         }

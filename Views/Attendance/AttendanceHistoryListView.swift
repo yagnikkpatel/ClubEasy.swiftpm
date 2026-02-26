@@ -36,7 +36,7 @@ struct AttendanceHistoryListView: View {
                 } label: {
                     HStack {
                         Image(systemName: "calendar")
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(Color.appTheme)
                         Text(dateFormatter.string(from: filterDate))
                             .foregroundStyle(.primary)
                         Spacer()

@@ -19,6 +19,7 @@ struct MyApp: App {
                     .transition(.opacity)
                 }
             }
+            .tint(.appTheme)
         }
     }
 }

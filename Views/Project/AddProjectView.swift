@@ -58,7 +58,7 @@ struct AddProjectView: View {
                 showMemberPicker = true
             } label: {
                 Label(assignmentType == .individual ? "Add Member" : "Add Team Member", systemImage: "person.badge.plus")
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(Color.appTheme)
             }
         } header: {
             Text(assignmentType == .individual ? "Assigned To" : "Team Members")

@@ -92,9 +92,9 @@ struct OverviewDashboard: View {
             GridItem(.flexible(), spacing: 12),
             GridItem(.flexible(), spacing: 12)
         ], spacing: 12) {
-            OverviewStatCardRow(value: "\(students.count)", label: "Total Students", icon: "person.2.fill", iconColor: .blue)
+            OverviewStatCardRow(value: "\(students.count)", label: "Total Students", icon: "person.2.fill", iconColor: .appTheme)
             OverviewStatCardRow(value: "\(projectProgress.completed)", label: "Completed", icon: "checkmark.circle.fill", iconColor: .green)
-            OverviewStatCardRow(value: "\(projectProgress.inProgress)", label: "In Progress", icon: "arrow.clockwise", iconColor: .blue)
+            OverviewStatCardRow(value: "\(projectProgress.inProgress)", label: "In Progress", icon: "arrow.clockwise", iconColor: .appTheme)
             OverviewStatCardRow(value: "\(projectsDueToday.count)", label: "Due Today", icon: "calendar.badge.clock", iconColor: .purple)
         }
     }
@@ -532,7 +532,7 @@ struct ProjectProgressChart: View {
                 
                 Circle()
                     .trim(from: completedPct, to: appeared ? completedPct + inProgressPct : completedPct)
-                    .stroke(Color.blue, style: StrokeStyle(lineWidth: 14, lineCap: .round))
+                    .stroke(Color.appTheme, style: StrokeStyle(lineWidth: 14, lineCap: .round))
                     .frame(width: 100, height: 100)
                     .rotationEffect(.degrees(-90))
                 
@@ -552,7 +552,7 @@ struct ProjectProgressChart: View {
             
             VStack(alignment: .leading, spacing: 12) {
                 ChartLegendRow(label: "Completed", count: completed, color: .green, percentage: Int(round(completedPct * 100)))
-                ChartLegendRow(label: "In Progress", count: inProgress, color: .blue, percentage: Int(round(inProgressPct * 100)))
+                ChartLegendRow(label: "In Progress", count: inProgress, color: .appTheme, percentage: Int(round(inProgressPct * 100)))
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

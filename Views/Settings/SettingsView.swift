@@ -9,7 +9,7 @@ struct SettingsView: View {
             Section {
                 SettingsRow(
                     icon: "list.bullet.rectangle",
-                    iconColor: .blue,
+                    iconColor: .appTheme,
                     title: "Custom Fields for Students"
                 ) {
                     sections = CustomFieldStorage.load()
@@ -31,7 +31,7 @@ struct SettingsView: View {
                             .font(.body)
                             .foregroundStyle(.white)
                             .frame(width: 28, height: 28)
-                            .background(Color.blue)
+                            .background(Color.appTheme)
                             .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
                         Text("About")
                             .font(.body)
@@ -64,7 +64,7 @@ struct AboutView: View {
                 VStack(spacing: 16) {
                     Image(systemName: "person.2.circle.fill")
                         .font(.system(size: 80))
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(Color.appTheme)
                     
                     VStack(spacing: 8) {
                         Text("ClubEasy")
@@ -113,7 +113,7 @@ struct SettingsRow: View {
     
     init(
         icon: String,
-        iconColor: Color = .blue,
+        iconColor: Color = .appTheme,
         title: String,
         subtitle: String? = nil,
         action: @escaping () -> Void
