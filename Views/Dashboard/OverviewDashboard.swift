@@ -21,6 +21,19 @@ struct OverviewDashboard: View {
     @Binding var projectFilterToShow: ProjectsFilter?
     @Binding var projects: [Project]
     @State private var students: [Student] = StudentStorage.load()
+    @State private var refreshID = UUID()
+    @State private var clubSubtitle: String = ClubSettingsStorage.subtitle
+    @State private var selectedTimeRange: AttendanceTimeRange = .daily
+    @State private var showCalendarView = false
+    
+    enum AttendanceTimeRange: String, CaseIterable, Identifiable {
+        case daily = "Daily"
+        case weekly = "Weekly"
+        case monthly = "Monthly"
+        var id: Self { self }
+    }
+    
+    // MARK: - Computed Properties
     
     private var studentsWithAttendance: [(student: Student, percentage: Int)] {
         students.compactMap { student in
@@ -54,16 +67,13 @@ struct OverviewDashboard: View {
         return projects.filter { cal.isDateInToday($0.deadline) }
     }
     
-
-    
     private var projectProgress: (completed: Int, inProgress: Int) {
         let completed = projects.filter { $0.status == .completed }.count
         let inProgress = projects.filter { $0.status == .inProgress }.count
         return (completed, inProgress)
     }
-    
-    @State private var refreshID = UUID()
-    @State private var clubSubtitle: String = ClubSettingsStorage.subtitle
+
+    // MARK: - Body
     
     var body: some View {
         ScrollView {
@@ -78,11 +88,13 @@ struct OverviewDashboard: View {
                         .padding(.top, -28)
                         .padding(.bottom, -8)
                 }
+                
                 statCardsSection
-                attendanceRiskSection
-                topPerformersSection
-                projectsDueSection
                 projectProgressSection
+                attendanceTrendsSection
+                projectsDueSection
+                topPerformersSection
+                attendanceRiskSection
             }
             .padding(.vertical, 20)
             .padding(.horizontal, 16)
@@ -98,6 +110,11 @@ struct OverviewDashboard: View {
             refreshID = UUID()
         }
     }
+}
+
+// MARK: - Dashboard Sections
+
+extension OverviewDashboard {
     
     private var statCardsSection: some View {
         LazyVGrid(columns: [
@@ -111,13 +128,60 @@ struct OverviewDashboard: View {
         }
     }
     
+    private var attendanceTrendsSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("Attendance Trends")
+                        .font(.headline)
+                        .foregroundStyle(Color.primary)
+                    
+                    Spacer()
+                    
+                    HStack(spacing: 16) {
+                        Button {
+                            selectedTimeRange = .daily
+                            refreshID = UUID()
+                        } label: {
+                            Image(systemName: "arrow.clockwise")
+                                .font(.title3)
+                                .foregroundStyle(.appTheme)
+                        }
+                        
+                        Button {
+                            showCalendarView = true
+                        } label: {
+                            Image(systemName: "calendar")
+                                .font(.title3)
+                                .foregroundStyle(.appTheme)
+                        }
+                    }
+                }
+                
+                Picker("Range", selection: $selectedTimeRange) {
+                    ForEach(AttendanceTimeRange.allCases) { range in
+                        Text(range.rawValue).tag(range)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+            
+            AttendanceTrendsChart(
+                range: selectedTimeRange
+            )
+        }
+        .sheet(isPresented: $showCalendarView) {
+            AttendanceCalendarView()
+        }
+    }
+    
     private var attendanceRiskSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 HStack(spacing: 8) {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .font(.subheadline)
-                    .foregroundStyle(Color.red)
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .font(.subheadline)
+                        .foregroundStyle(Color.red)
                     Text("Attendance Risk")
                         .font(.headline)
                         .foregroundStyle(Color.primary)
@@ -286,8 +350,6 @@ struct OverviewDashboard: View {
         }
     }
     
-
-    
     private var projectProgressSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -314,6 +376,8 @@ struct OverviewDashboard: View {
         }
     }
 }
+
+// MARK: - Subviews & Components
 
 struct OverviewStatCardRow: View {
     let value: String
@@ -349,6 +413,198 @@ struct OverviewStatCardRow: View {
         .padding(.vertical, 12)
         .background(Color(.secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+}
+
+struct AttendanceTrendsChart: View {
+    let range: OverviewDashboard.AttendanceTimeRange
+    
+    @State private var animateProgress: Double = 0
+    
+    private var chartConfig: (barWidth: CGFloat, spacing: CGFloat, fontSize: CGFloat, showScroll: Bool) {
+        return (24, 6, 8, true)
+    }
+    
+    private var data: [(label: String, percentage: Double, present: Int, total: Int, isToday: Bool)] {
+        let cal = Calendar.current
+        let now = Date()
+        
+        switch range {
+        case .daily:
+            // Full current month detail
+            guard let monthStart = cal.date(from: cal.dateComponents([.year, .month], from: now)),
+                  let monthRange = cal.range(of: .day, in: .month, for: monthStart) else { return [] }
+            
+            let monthEnd = cal.date(byAdding: .day, value: monthRange.count - 1, to: monthStart)!
+            let stats = AttendanceStorage.dailyAttendanceStats(from: monthStart, to: monthEnd)
+            
+            let df = DateFormatter()
+            df.dateFormat = "d"
+            
+            return stats.map { stat in
+                let isToday = cal.isDateInToday(stat.date)
+                let label = df.string(from: stat.date)
+                return (label: label, percentage: stat.percentage, present: stat.present, total: stat.total, isToday: isToday)
+            }
+            
+        case .weekly:
+            // Weeks of the current month
+            let stats = AttendanceStorage.weeklyAttendanceStats()
+            return stats.map { (label: $0.label, percentage: $0.percentage, present: $0.present, total: $0.total, isToday: $0.isToday) }
+            
+        case .monthly:
+            // Months of the year
+            let stats = AttendanceStorage.monthlyAttendanceStats()
+            let df = DateFormatter()
+            df.dateFormat = "MMM"
+            return stats.map { 
+                let isCurrentMonth = cal.isDate($0.monthStart, equalTo: now, toGranularity: .month)
+                return (label: df.string(from: $0.monthStart), percentage: $0.percentage, present: $0.present, total: $0.total, isToday: isCurrentMonth)
+            }
+            
+        }
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            if data.isEmpty {
+                emptyState
+            } else {
+                chartContent
+                summaryInfo
+            }
+        }
+        .padding(20)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .onAppear {
+            withAnimation(.easeOut(duration: 1.0)) {
+                animateProgress = 1
+            }
+        }
+    }
+    
+    private var emptyState: some View {
+        HStack {
+            Spacer()
+            VStack(spacing: 8) {
+                Image(systemName: "chart.bar.fill")
+                    .font(.largeTitle)
+                    .foregroundStyle(.quaternary)
+                Text("No attendance records found")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.vertical, 40)
+            Spacer()
+        }
+    }
+    
+    private var chartContent: some View {
+        ScrollViewReader { proxy in
+            ScrollView(.horizontal, showsIndicators: false) {
+                ZStack(alignment: .bottomLeading) {
+                    // Background grid lines
+                    VStack {
+                        ForEach(0...4, id: \.self) { i in
+                            Divider().opacity(0.3)
+                            if i < 4 { Spacer() }
+                        }
+                    }
+                    .frame(height: 120)
+                    .padding(.bottom, 32)
+                    
+                    HStack(alignment: .bottom, spacing: chartConfig.spacing) {
+                        ForEach(Array(data.enumerated()), id: \.offset) { index, item in
+                            VStack(spacing: 8) {
+                                ZStack(alignment: .bottom) {
+                                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                                        .fill(Color(.quaternaryLabel).opacity(0.3))
+                                        .frame(width: chartConfig.barWidth, height: 120)
+                                    
+                                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                                        .fill(colorFor(item.percentage))
+                                        .frame(width: chartConfig.barWidth, height: max(6, CGFloat(item.percentage / 100 * 120) * animateProgress))
+                                }
+                                .id(item.isToday ? "today" : "\(index)")
+                                
+                                Text(item.label)
+                                    .font(.system(size: chartConfig.fontSize, design: .rounded))
+                                    .fontWeight(.bold)
+                                    .foregroundStyle(item.isToday ? .appTheme : .secondary)
+                                    .frame(width: chartConfig.barWidth + chartConfig.spacing)
+                                    .lineLimit(1)
+                                    .fixedSize()
+                            }
+                        }
+                    }
+                    .frame(minWidth: UIScreen.main.bounds.width - 72, alignment: .leading)
+                    .padding(.horizontal, 4)
+                }
+            }
+            .disabled(!chartConfig.showScroll)
+            .onAppear {
+                if range == .daily {
+                    scrollToToday(proxy: proxy)
+                }
+            }
+        }
+    }
+    
+    private func scrollToToday(proxy: ScrollViewProxy) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            withAnimation {
+                proxy.scrollTo("today", anchor: .leading)
+            }
+        }
+    }
+    
+    
+    private var summaryInfo: some View {
+        Group {
+            let displayItem = data.first(where: { $0.isToday }) ?? data.last
+            if let item = displayItem {
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(item.isToday ? "Today's Status" : "Latest Update")
+                            .font(.caption2)
+                            .fontWeight(.bold)
+                            .foregroundStyle(.appTheme)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.appTheme.opacity(0.1))
+                            .clipShape(Capsule())
+                        
+                        if item.total > 0 {
+                            Text("\(item.present) / \(item.total) students present")
+                                .font(.subheadline)
+                                .fontWeight(.bold)
+                        } else {
+                            Text("No attendance recorded")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    Spacer()
+                    VStack(alignment: .trailing, spacing: 0) {
+                        Text("\(Int(round(item.percentage)))%")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundStyle(item.total > 0 ? colorFor(item.percentage) : .secondary)
+                        Text(range == .monthly ? "Yearly Avg" : "Accuracy")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(.top, 8)
+            }
+        }
+    }
+    
+    private func colorFor(_ pct: Double) -> Color {
+        if pct >= 75 { return .green }
+        if pct >= 50 { return .orange }
+        return .red
     }
 }
 
@@ -411,6 +667,9 @@ struct TopPerformerRow: View {
     
     var body: some View {
         HStack(spacing: 12) {
+            Circle()
+                .fill(Color.green)
+                .frame(width: 8, height: 8)
             Text(student.name)
                 .font(.body)
                 .fontWeight(.medium)
@@ -441,9 +700,14 @@ struct TopPerformersAllView: View {
                                 .fontWeight(.medium)
                                 .foregroundStyle(.secondary)
                                 .frame(width: 24, alignment: .leading)
-                            Text(item.student.name)
-                                .font(.body)
-                                .foregroundStyle(.primary)
+                            HStack(spacing: 12) {
+                                Circle()
+                                    .fill(Color.green)
+                                    .frame(width: 8, height: 8)
+                                Text(item.student.name)
+                                    .font(.body)
+                                    .foregroundStyle(.primary)
+                            }
                             Spacer()
                             Text("\(item.percentage)%")
                                 .font(.subheadline)
@@ -476,9 +740,14 @@ struct AttendanceRiskAllView: View {
                                 .fontWeight(.medium)
                                 .foregroundStyle(.secondary)
                                 .frame(width: 24, alignment: .leading)
-                            Text(item.student.name)
-                                .font(.body)
-                                .foregroundStyle(.primary)
+                            HStack(spacing: 12) {
+                                Circle()
+                                    .fill(Color.red)
+                                    .frame(width: 8, height: 8)
+                                Text(item.student.name)
+                                    .font(.body)
+                                    .foregroundStyle(.primary)
+                            }
                             Spacer()
                             Text("\(item.percentage)%")
                                 .font(.subheadline)
@@ -515,8 +784,6 @@ struct AttendanceRiskRow: View {
     }
 }
 
-
-
 struct ProjectProgressChart: View {
     let completed: Int
     let inProgress: Int
@@ -530,12 +797,10 @@ struct ProjectProgressChart: View {
     var body: some View {
         HStack(spacing: 32) {
             ZStack {
-                // Background track
                 Circle()
                     .stroke(Color(.quaternaryLabel), style: StrokeStyle(lineWidth: 14))
                     .frame(width: 100, height: 100)
                 
-                // Segmented ring
                 Circle()
                     .trim(from: 0, to: appeared ? completedPct : 0)
                     .stroke(Color.green, style: StrokeStyle(lineWidth: 14, lineCap: .round))
@@ -548,7 +813,6 @@ struct ProjectProgressChart: View {
                     .frame(width: 100, height: 100)
                     .rotationEffect(.degrees(-90))
                 
-                // Center percentage label
                 VStack(spacing: -2) {
                     Text("\(centerPercentage)%")
                         .font(.title3)

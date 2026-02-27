@@ -96,6 +96,62 @@ struct SettingsView: View {
             
             Section {
                 NavigationLink {
+                    ReportFormatDetailView()
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: "doc.text.below.ecg")
+                            .font(.body)
+                            .foregroundStyle(.white)
+                            .frame(width: 28, height: 28)
+                            .background(Color.orange)
+                            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text("Report Formats")
+                                .font(.body)
+                                .foregroundStyle(.primary)
+                            Text("PDF & Excel Layout Previews")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            } header: {
+                Text("REPORT EXPORTS")
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.secondary)
+            }
+            
+            Section {
+                Link(destination: URL(string: "https://developer.apple.com/learn/swift-coding-club/")!) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "swift")
+                            .font(.body)
+                            .foregroundStyle(.white)
+                            .frame(width: 28, height: 28)
+                            .background(Color.orange)
+                            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text("Start Your Club")
+                                .font(.body)
+                                .foregroundStyle(.primary)
+                            Text("Apple Developer Program")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            } header: {
+                Text("SWIFT CODING CLUB")
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.secondary)
+            } footer: {
+                Text("Do you want to start your swift coding club at your university explore this link")
+            }
+            
+            Section {
+                NavigationLink {
                     AboutView()
                 } label: {
                     HStack(spacing: 12) {
@@ -327,7 +383,7 @@ struct SenderEmailEditorView: View {
         NavigationStack {
             List {
                 Section {
-                    TextField("yagnikpatel5253@gmail.com", text: $draft)
+                    TextField("Add your email", text: $draft)
                         .font(.body)
                         .keyboardType(.emailAddress)
                         .autocorrectionDisabled()
@@ -479,6 +535,171 @@ struct BoilerplateEditorView: View {
             .onAppear {
                 draft = boilerplate
             }
+        }
+    }
+}
+
+struct ReportFormatDetailView: View {
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 32) {
+                // PDF Section
+                VStack(alignment: .leading, spacing: 16) {
+                    Label("PDF Report Structure", systemImage: "doc.richtext.fill")
+                        .font(.headline)
+                        .foregroundStyle(.black)
+                        .padding(.horizontal)
+                    
+                    VStack(alignment: .leading, spacing: 0) {
+                        // PDF Header Mockup
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Swift Coding Club")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .foregroundStyle(.appTheme)
+                            
+                            Text("Parul University")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                .foregroundStyle(.primary)
+                            
+                            Text("Exported: 27 Feb 2026")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                            
+                            Rectangle()
+                                .fill(Color.secondary.opacity(0.3))
+                                .frame(height: 0.5)
+                                .padding(.top, 4)
+                            
+                            Text("Date: February 27, 2026   ·   2/2 present")
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                                .padding(.top, 8)
+                        }
+                        .padding()
+                        .background(Color(.secondarySystemGroupedBackground))
+                        
+                        // PDF Table Mockup with Horizontal Scroll
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            VStack(spacing: 0) {
+                                HStack(spacing: 0) {
+                                    headerCell("#", width: 30)
+                                    headerCell("Name", width: 120)
+                                    headerCell("Enrollment No.", width: 130)
+                                    headerCell("Email ID", width: 180)
+                                    headerCell("Yr", width: 30)
+                                    headerCell("Sem", width: 35)
+                                    headerCell("Status", width: 60, alignment: .trailing)
+                                }
+                                .padding(.horizontal)
+                                .background(Color.appTheme)
+                                .clipShape(UnevenRoundedRectangle(topLeadingRadius: 4, topTrailingRadius: 4))
+                                
+                                row(sr: "1", name: "Arpita Mishra", enroll: "2303051050533", email: "2303051050533@paruluniv..", yr: "3", sem: "6", status: "Present", color: Color(white: 0.2), statusColor: .green)
+                                row(sr: "2", name: "Bhavesh Solanki", enroll: "2303051050599", email: "2303051050599@paruluniv..", yr: "3", sem: "6", status: "Present", color: Color(white: 0.15), statusColor: .green, isLast: true)
+                            }
+                            .padding([.horizontal, .bottom])
+                        }
+                        .background(Color(.secondarySystemGroupedBackground))
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.secondary.opacity(0.1), lineWidth: 1))
+                    .padding(.horizontal)
+                    
+                    Text("The PDF export includes all student metadata: Name, Enrollment Number, Email, Year, and Semester.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 24)
+                }
+                
+                // Excel Section
+                VStack(alignment: .leading, spacing: 16) {
+                    Label("Excel / CSV Structure", systemImage: "tablecells.fill")
+                        .font(.headline)
+                        .foregroundStyle(.black)
+                        .padding(.horizontal)
+                    
+                    VStack(alignment: .leading, spacing: 0) {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            VStack(alignment: .leading, spacing: 0) {
+                                excelRow(cells: ["Swift Coding Club", "", "", "", "", "", ""])
+                                excelRow(cells: ["Parul University", "", "", "", "", "", ""])
+                                excelRow(cells: ["Exported: 27 Feb 2026", "", "", "", "", "", ""])
+                                excelRow(cells: ["", "", "", "", "", "", ""])
+                                excelRow(cells: ["Date:", "February 27", "2026", "", "", "", ""])
+                                excelRow(cells: ["Sr.", "Name", "Enrollment No.", "Email ID", "Year", "Sem", "Status"], isHeader: true)
+                                excelRow(cells: ["1", "Arpita Mishra", "2303051050533", "2303051050533@parul...", "3", "6", "Present"])
+                                excelRow(cells: ["2", "Bhavesh Solanki", "2303051050599", "2303051050599@parul...", "3", "6", "Present"])
+                            }
+                            .padding()
+                        }
+                        .background(Color(.secondarySystemGroupedBackground))
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.secondary.opacity(0.1), lineWidth: 1))
+                    .padding(.horizontal)
+                    
+                    Text("The Excel format mirrors the complete data structure, ensuring all custom fields and identifiers are preserved.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 24)
+                }
+            }
+            .padding(.vertical, 24)
+        }
+        .background(Color(.systemGroupedBackground))
+        .navigationTitle("Report Formats")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    private func headerCell(_ text: String, width: CGFloat, alignment: Alignment = .leading) -> some View {
+        Text(text)
+            .font(.system(size: 9, weight: .bold))
+            .frame(width: width, height: 30, alignment: alignment)
+            .lineLimit(1)
+    }
+    
+    private func row(sr: String, name: String, enroll: String, email: String, yr: String, sem: String, status: String, color: Color, statusColor: Color, isLast: Bool = false) -> some View {
+        HStack(spacing: 0) {
+            Text(sr).frame(width: 30, alignment: .leading)
+            Text(name).frame(width: 120, alignment: .leading)
+            Text(enroll).frame(width: 130, alignment: .leading)
+            Text(email).frame(width: 180, alignment: .leading)
+            Text(yr).frame(width: 30, alignment: .leading)
+            Text(sem).frame(width: 35, alignment: .leading)
+            Text(status).frame(width: 60, alignment: .trailing).foregroundStyle(statusColor)
+        }
+        .font(.system(size: 8))
+        .foregroundStyle(.white)
+        .padding(.vertical, 8)
+        .padding(.horizontal)
+        .background(color)
+        .clipShape(isLast ? UnevenRoundedRectangle(bottomLeadingRadius: 4, bottomTrailingRadius: 4) : UnevenRoundedRectangle())
+        .lineLimit(1)
+    }
+    
+    private func excelRow(cells: [String], isHeader: Bool = false) -> some View {
+        HStack(spacing: 0) {
+            ForEach(0..<cells.count, id: \.self) { i in
+                Text(cells[i])
+                    .font(.system(size: 9, weight: isHeader ? .bold : .regular, design: .monospaced))
+                    .padding(4)
+                    .frame(width: excelColumnWidth(for: i), height: 24, alignment: .leading)
+                    .background(isHeader ? Color.secondary.opacity(0.1) : Color.clear)
+                    .border(Color.secondary.opacity(0.2), width: 0.5)
+                    .lineLimit(1)
+            }
+        }
+    }
+    
+    private func excelColumnWidth(for index: Int) -> CGFloat {
+        switch index {
+        case 0: return 35
+        case 1: return 120
+        case 2: return 140
+        case 3: return 180
+        default: return 60
         }
     }
 }

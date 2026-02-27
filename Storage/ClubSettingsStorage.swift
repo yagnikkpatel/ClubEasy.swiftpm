@@ -19,7 +19,7 @@ enum ClubSettingsStorage {
     }
 
     static var senderEmail: String {
-        get { UserDefaults.standard.string(forKey: senderEmailKey) ?? "yagnikpatel5253@gmail.com" }
+        get { UserDefaults.standard.string(forKey: senderEmailKey) ?? "" }
         set { UserDefaults.standard.set(newValue, forKey: senderEmailKey) }
     }
 
