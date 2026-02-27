@@ -63,10 +63,21 @@ struct OverviewDashboard: View {
     }
     
     @State private var refreshID = UUID()
+    @State private var clubSubtitle: String = ClubSettingsStorage.subtitle
     
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
+                if !clubSubtitle.isEmpty {
+                    Text(clubSubtitle)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.appTheme)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 4)
+                        .padding(.top, -28)
+                        .padding(.bottom, -8)
+                }
                 statCardsSection
                 attendanceRiskSection
                 topPerformersSection
@@ -83,6 +94,7 @@ struct OverviewDashboard: View {
         .onAppear {
             students = StudentStorage.load()
             projects = ProjectStorage.load()
+            clubSubtitle = ClubSettingsStorage.subtitle
             refreshID = UUID()
         }
     }

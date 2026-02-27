@@ -11,10 +11,11 @@ struct Student: Identifiable, Codable, Equatable {
     let department: String
     let collegeEmail: String
     let year: String
+    let semester: String
     let profileImageFileName: String?
     let customFieldValues: [String: String]
     
-    init(id: UUID = UUID(), name: String, level: String, initials: String, enrollmentNumber: String, skills: [String], contactNumber: String, department: String, collegeEmail: String, year: String = "", profileImageFileName: String? = nil, customFieldValues: [String: String] = [:]) {
+    init(id: UUID = UUID(), name: String, level: String, initials: String, enrollmentNumber: String, skills: [String], contactNumber: String, department: String, collegeEmail: String, year: String = "", semester: String = "", profileImageFileName: String? = nil, customFieldValues: [String: String] = [:]) {
         self.id = id
         self.name = name
         self.level = level
@@ -25,6 +26,7 @@ struct Student: Identifiable, Codable, Equatable {
         self.department = department
         self.collegeEmail = collegeEmail
         self.year = year
+        self.semester = semester
         self.profileImageFileName = profileImageFileName
         self.customFieldValues = customFieldValues
     }
@@ -41,6 +43,7 @@ struct Student: Identifiable, Codable, Equatable {
         department = try container.decode(String.self, forKey: .department)
         collegeEmail = try container.decode(String.self, forKey: .collegeEmail)
         year = try container.decodeIfPresent(String.self, forKey: .year) ?? ""
+        semester = try container.decodeIfPresent(String.self, forKey: .semester) ?? ""
         profileImageFileName = try container.decodeIfPresent(String.self, forKey: .profileImageFileName)
         customFieldValues = try container.decodeIfPresent([String: String].self, forKey: .customFieldValues) ?? [:]
     }
@@ -57,15 +60,16 @@ struct Student: Identifiable, Codable, Equatable {
         try container.encode(department, forKey: .department)
         try container.encode(collegeEmail, forKey: .collegeEmail)
         try container.encode(year, forKey: .year)
+        try container.encode(semester, forKey: .semester)
         try container.encodeIfPresent(profileImageFileName, forKey: .profileImageFileName)
         try container.encode(customFieldValues, forKey: .customFieldValues)
     }
     
     enum CodingKeys: String, CodingKey {
-        case id, name, level, initials, enrollmentNumber, skills, contactNumber, department, collegeEmail, year, profileImageFileName, customFieldValues
+        case id, name, level, initials, enrollmentNumber, skills, contactNumber, department, collegeEmail, year, semester, profileImageFileName, customFieldValues
     }
     
     func with(customFieldValues: [String: String]) -> Student {
-        Student(id: id, name: name, level: level, initials: initials, enrollmentNumber: enrollmentNumber, skills: skills, contactNumber: contactNumber, department: department, collegeEmail: collegeEmail, year: year, profileImageFileName: profileImageFileName, customFieldValues: customFieldValues)
+        Student(id: id, name: name, level: level, initials: initials, enrollmentNumber: enrollmentNumber, skills: skills, contactNumber: contactNumber, department: department, collegeEmail: collegeEmail, year: year, semester: semester, profileImageFileName: profileImageFileName, customFieldValues: customFieldValues)
     }
 }

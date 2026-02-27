@@ -12,7 +12,6 @@ enum PredefinedSkills {
         "Swift",
         "SwiftUI",
         "UIKit",
-        "Combine",
         "Swift Concurrency",
         "Core Data",
         "Core Animation",
@@ -42,6 +41,7 @@ struct AddStudentView: View {
     @State private var contactNumber = ""
     @State private var collegeEmail = ""
     @State private var year = ""
+    @State private var semester = ""
     @State private var programmingLevel: StudentLevel = .beginner
     @State private var department = ""
     @State private var selectedSkills: Set<String> = []
@@ -104,6 +104,7 @@ struct AddStudentView: View {
                     contactNumber = student.contactNumber
                     collegeEmail = student.collegeEmail
                     year = student.year
+                    semester = student.semester
                     department = student.department
                     programmingLevel = StudentLevel(rawValue: student.level) ?? .beginner
                     selectedSkills = Set(student.skills)
@@ -218,10 +219,18 @@ struct AddStudentView: View {
         return Section("Contact Information") {
             TextField("Contact Number", text: $contactNumber)
                 .keyboardType(.phonePad)
-            TextField("College Email", text: $collegeEmail)
-                .keyboardType(.emailAddress)
-                .textContentType(.emailAddress)
-                .textInputAutocapitalization(.never)
+            HStack {
+                TextField("College Email", text: $collegeEmail)
+                    .keyboardType(.emailAddress)
+                    .textContentType(.emailAddress)
+                    .textInputAutocapitalization(.never)
+                
+                if !collegeEmail.contains("@"), !ClubSettingsStorage.emailDomain.isEmpty {
+                    Text(ClubSettingsStorage.emailDomain)
+                        .foregroundStyle(.secondary)
+                        .font(.subheadline)
+                }
+            }
             CustomFieldInputsView(fields: contactFields, values: $customFieldValues)
         }
     }
@@ -234,6 +243,8 @@ struct AddStudentView: View {
             TextField("Enrollment Number", text: $enrollmentNumber)
                 .keyboardType(.numberPad)
             TextField("Year", text: $year)
+                .keyboardType(.numberPad)
+            TextField("Semester", text: $semester)
                 .keyboardType(.numberPad)
             TextField("Department", text: $department)
                 .autocapitalization(.words)
@@ -326,8 +337,16 @@ struct AddStudentView: View {
             skills: Array(selectedSkills).sorted(),
             contactNumber: contactNumber.trimmingCharacters(in: .whitespaces),
             department: department.trimmingCharacters(in: .whitespaces),
-            collegeEmail: collegeEmail.trimmingCharacters(in: .whitespaces),
+            collegeEmail: {
+                var email = collegeEmail.trimmingCharacters(in: .whitespaces)
+                let domain = ClubSettingsStorage.emailDomain
+                if !email.isEmpty && !email.contains("@") && !domain.isEmpty {
+                    email += domain
+                }
+                return email
+            }(),
             year: year.trimmingCharacters(in: .whitespaces),
+            semester: semester.trimmingCharacters(in: .whitespaces),
             profileImageFileName: profileImageFileName,
             customFieldValues: customFieldValues
         )

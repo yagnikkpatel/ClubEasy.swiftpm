@@ -166,6 +166,9 @@ struct StudentDetailView: View {
             if !currentStudent.year.isEmpty {
                 LabeledRow(icon: "calendar", title: "Year", value: currentStudent.year)
             }
+            if !currentStudent.semester.isEmpty {
+                LabeledRow(icon: "graduationcap", title: "Semester", value: currentStudent.semester)
+            }
             if !currentStudent.department.isEmpty {
                 LabeledRow(icon: "building.2.fill", title: "Department", value: currentStudent.department)
             }

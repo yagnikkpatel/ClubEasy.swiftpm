@@ -14,19 +14,10 @@ enum CustomFieldStorage {
         defaultSectionIds.values.contains(id)
     }
     
-    /// Fixed UUID for default Semester field
-    private static let defaultSemesterFieldId = UUID(uuidString: "E5F6A7B8-C9D0-1234-EF01-345678901234")!
-    
     static var defaultSections: [CustomFieldSection] {
-        let semesterField = CustomField(
-            id: defaultSemesterFieldId,
-            label: "Semester",
-            type: .number,
-            placeholder: "Semester"
-        )
         return [
             CustomFieldSection(id: defaultSectionIds["Contact Information"]!, name: "Contact Information", fields: []),
-            CustomFieldSection(id: defaultSectionIds["Academic Information"]!, name: "Academic Information", fields: [semesterField]),
+            CustomFieldSection(id: defaultSectionIds["Academic Information"]!, name: "Academic Information", fields: []),
             CustomFieldSection(id: defaultSectionIds["Personal Information"]!, name: "Personal Information", fields: [])
         ]
     }
@@ -49,11 +40,7 @@ enum CustomFieldStorage {
                 var merged = existing
                 for defaultField in defaultSection.fields {
                     if let idx = merged.fields.firstIndex(where: { $0.id == defaultField.id }) {
-                        var field = merged.fields[idx]
-                        if field.label == "Semester" && field.placeholder != "Semester" {
-                            field.placeholder = "Semester"
-                            merged.fields[idx] = field
-                        }
+                        // Field already exists, no need to update
                     } else {
                         merged.fields.append(defaultField)
                     }

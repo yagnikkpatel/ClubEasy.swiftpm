@@ -39,6 +39,7 @@ struct ContentView: View {
                 }
             }
         }
+        .tabViewStyle(.tabBarOnly)
         .onChange(of: projects) { _, newProjects in
             ProjectStorage.save(newProjects)
         }

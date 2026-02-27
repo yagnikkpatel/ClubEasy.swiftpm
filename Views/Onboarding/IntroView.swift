@@ -64,7 +64,7 @@ struct IntroView: View {
             }) {
                 Text(currentPage == 2 ? "Get Started" : "Continue")
                     .font(.headline)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
                     .background(Color.appTheme)
@@ -98,7 +98,7 @@ struct IntroPage: View {
                 
                 Text(subtitle)
                     .font(.body)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
             }

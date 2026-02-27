@@ -5,13 +5,15 @@ struct AttendanceHistoryListView: View {
     @Binding var hasAttendance: Bool
     @State private var dates: [Date] = AttendanceStorage.datesWithAttendance()
     
-    init(refreshTrigger: Int = 0, hasAttendance: Binding<Bool>) {
+    init(refreshTrigger: Int = 0, hasAttendance: Binding<Bool>, filterDate: Binding<Date>, filterByDate: Binding<Bool>) {
         self.refreshTrigger = refreshTrigger
         self._hasAttendance = hasAttendance
+        self._filterDate = filterDate
+        self._filterByDate = filterByDate
     }
     @State private var listRefreshId = 0
-    @State private var filterDate: Date = Calendar.current.startOfDay(for: Date())
-    @State private var filterByDate = false
+    @Binding var filterDate: Date
+    @Binding var filterByDate: Bool
     @State private var showCalendar = false
     
     private var dateFormatter: DateFormatter {
@@ -144,6 +146,10 @@ struct AttendanceHistoryListView: View {
 
 #Preview {
     NavigationStack {
-        AttendanceHistoryListView(hasAttendance: .constant(true))
+        AttendanceHistoryListView(
+            hasAttendance: .constant(true),
+            filterDate: .constant(Date()),
+            filterByDate: .constant(false)
+        )
     }
 }

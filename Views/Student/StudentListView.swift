@@ -49,8 +49,23 @@ struct StudentListView: View {
     
     private var studentList: some View {
         List {
-            ForEach(groupedStudents, id: \.key) { group in
-                studentSection(group: group)
+            if !students.isEmpty && !filteredStudents.isEmpty {
+                ForEach(groupedStudents, id: \.key) { group in
+                    studentSection(group: group)
+                }
+            }
+        }
+        .overlay {
+            if students.isEmpty {
+                ContentUnavailableView(
+                    "No Students",
+                    systemImage: "person.2.slash",
+                    description: Text("Add students to get started")
+                )
+                .offset(y: -44)
+            } else if filteredStudents.isEmpty {
+                ContentUnavailableView.search(text: searchText)
+                    .offset(y: -44)
             }
         }
     }

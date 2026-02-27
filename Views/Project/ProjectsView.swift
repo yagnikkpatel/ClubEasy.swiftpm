@@ -52,17 +52,7 @@ struct ProjectsView: View {
     
     private var projectList: some View {
         List {
-            if projects.isEmpty {
-                Section {
-                    ContentUnavailableView("No Projects", systemImage: "folder", description: Text("Tap + to add a project"))
-                        .listRowBackground(Color.clear)
-                }
-            } else if filteredProjects.isEmpty {
-                Section {
-                    ContentUnavailableView("No Results", systemImage: "magnifyingglass", description: Text("No projects match \"\(searchText)\""))
-                        .listRowBackground(Color.clear)
-                }
-            } else {
+            if !projects.isEmpty && !filteredProjects.isEmpty {
                 Section {
                     projectRows
                 }
@@ -70,6 +60,15 @@ struct ProjectsView: View {
         }
         .listStyle(.insetGrouped)
         .listSectionSpacing(.compact)
+        .overlay {
+            if projects.isEmpty {
+                ContentUnavailableView("No Projects", systemImage: "folder", description: Text("Add projects to get started"))
+                    .offset(y: -44)
+            } else if filteredProjects.isEmpty {
+                ContentUnavailableView.search(text: searchText)
+                    .offset(y: -44)
+            }
+        }
     }
     
     private var projectRows: some View {
