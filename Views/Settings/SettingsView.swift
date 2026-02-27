@@ -8,6 +8,15 @@ struct SettingsView: View {
     @State private var showDomainEditor = false
     @State private var emailDomain: String = ClubSettingsStorage.emailDomain
     
+    // Attendance Email Settings
+    @State private var senderEmail: String = ClubSettingsStorage.senderEmail
+    @State private var recipientEmails: [String] = ClubSettingsStorage.recipientEmails
+    @State private var boilerplate: String = ClubSettingsStorage.defaultBoilerplate
+    
+    @State private var showSenderEmailEditor = false
+    @State private var showRecipientEditor = false
+    @State private var showBoilerplateEditor = false
+    
     var body: some View {
         List {
             Section {
@@ -34,6 +43,40 @@ struct SettingsView: View {
                     .fontWeight(.medium)
                     .foregroundStyle(.secondary)
             } 
+            
+            Section {
+                SettingsRow(
+                    icon: "envelope",
+                    iconColor: .appTheme,
+                    title: "Default Sender Email",
+                    subtitle: senderEmail.isEmpty ? "None" : senderEmail
+                ) {
+                    showSenderEmailEditor = true
+                }
+                
+                SettingsRow(
+                    icon: "person.2",
+                    iconColor: .appTheme,
+                    title: "Recipient List",
+                    subtitle: "\(recipientEmails.count) recipients"
+                ) {
+                    showRecipientEditor = true
+                }
+                
+                SettingsRow(
+                    icon: "text.quote",
+                    iconColor: .appTheme,
+                    title: "Default Message",
+                    subtitle: boilerplate.isEmpty ? "None" : String(boilerplate.prefix(30)) + (boilerplate.count > 30 ? "..." : "")
+                ) {
+                    showBoilerplateEditor = true
+                }
+            } header: {
+                Text("EMAIL & ATTENDANCE SHARING")
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.secondary)
+            }
             
             Section {
                 SettingsRow(
@@ -88,6 +131,15 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showDomainEditor) {
             UniversityDomainEditorView(domain: $emailDomain)
+        }
+        .sheet(isPresented: $showSenderEmailEditor) {
+            SenderEmailEditorView(email: $senderEmail)
+        }
+        .sheet(isPresented: $showRecipientEditor) {
+            RecipientEditorView(recipients: $recipientEmails)
+        }
+        .sheet(isPresented: $showBoilerplateEditor) {
+            BoilerplateEditorView(boilerplate: $boilerplate)
         }
     }
 }
@@ -266,8 +318,167 @@ struct SettingsRow: View {
     }
 }
 
-#Preview {
-    NavigationStack {
-        SettingsView()
+struct SenderEmailEditorView: View {
+    @Binding var email: String
+    @Environment(\.dismiss) private var dismiss
+    @State private var draft: String = ""
+    
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    TextField("yagnikpatel5253@gmail.com", text: $draft)
+                        .font(.body)
+                        .keyboardType(.emailAddress)
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
+                } header: {
+                    Text("DEFAULT SENDER EMAIL")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.secondary)
+                } footer: {
+                    Text("This email will be used as the default sender reference.")
+                }
+            }
+            .navigationTitle("Sender Email")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        email = draft
+                        ClubSettingsStorage.senderEmail = draft
+                        dismiss()
+                    }
+                    .fontWeight(.bold)
+                }
+            }
+            .onAppear {
+                draft = email
+            }
+        }
+    }
+}
+
+struct RecipientEditorView: View {
+    @Binding var recipients: [String]
+    @Environment(\.dismiss) private var dismiss
+    @State private var draftRecipients: [String] = []
+    @State private var newEmail: String = ""
+    
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    HStack {
+                        TextField("Add recipient email...", text: $newEmail)
+                            .keyboardType(.emailAddress)
+                            .autocorrectionDisabled()
+                            .textInputAutocapitalization(.never)
+                        
+                        Button {
+                            if !newEmail.isEmpty && newEmail.contains("@") {
+                                withAnimation {
+                                    draftRecipients.append(newEmail)
+                                    newEmail = ""
+                                }
+                            }
+                        } label: {
+                            Image(systemName: "plus.circle.fill")
+                                .foregroundStyle(Color.appTheme)
+                                .font(.title3)
+                        }
+                    }
+                } header: {
+                    Text("ADD RECIPIENT")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.secondary)
+                }
+                
+                Section {
+                    if draftRecipients.isEmpty {
+                        Text("No recipients added")
+                            .foregroundStyle(.secondary)
+                            .italic()
+                    } else {
+                        ForEach(draftRecipients, id: \.self) { email in
+                            Text(email)
+                        }
+                        .onDelete { indexSet in
+                            draftRecipients.remove(atOffsets: indexSet)
+                        }
+                    }
+                } header: {
+                    Text("RECIPIENT LIST")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .navigationTitle("Recipients")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        recipients = draftRecipients
+                        ClubSettingsStorage.recipientEmails = draftRecipients
+                        dismiss()
+                    }
+                    .fontWeight(.bold)
+                }
+            }
+            .onAppear {
+                draftRecipients = recipients
+            }
+        }
+    }
+}
+
+struct BoilerplateEditorView: View {
+    @Binding var boilerplate: String
+    @Environment(\.dismiss) private var dismiss
+    @State private var draft: String = ""
+    
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    TextEditor(text: $draft)
+                        .frame(minHeight: 150)
+                } header: {
+                    Text("DEFAULT MESSAGE")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.secondary)
+                } footer: {
+                    Text("This message will be pre-filled when sending attendance reports.")
+                }
+            }
+            .navigationTitle("Default Message")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        boilerplate = draft
+                        ClubSettingsStorage.defaultBoilerplate = draft
+                        dismiss()
+                    }
+                    .fontWeight(.bold)
+                }
+            }
+            .onAppear {
+                draft = boilerplate
+            }
+        }
     }
 }

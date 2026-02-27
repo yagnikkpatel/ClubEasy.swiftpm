@@ -6,6 +6,7 @@ struct AttendanceView: View {
     @State private var refreshTrigger = 0
     @State private var showExportMenu = false
     @State private var exportItem: ExportItem?
+    @State private var showEmailShare = false
     
     // Shared Filtering State
     @State private var filterByDate = false
@@ -48,12 +49,17 @@ struct AttendanceView: View {
                             Button {
                                 exportAttendance(format: .csv)
                             } label: {
-                                Label("Export as CSV (Excel)", systemImage: "tablecells")
+                                Label("Save as CSV (Excel)", systemImage: "tablecells")
                             }
                             Button {
                                 exportAttendance(format: .pdf)
                             } label: {
-                                Label("Export as PDF", systemImage: "doc.richtext")
+                                Label("Save as PDF", systemImage: "doc.richtext")
+                            }
+                            Button {
+                                showEmailShare = true
+                            } label: {
+                                Label("Send via Email", systemImage: "envelope")
                             }
                         }
                     } label: {
@@ -75,6 +81,9 @@ struct AttendanceView: View {
         .sheet(item: $exportItem) { item in
             ShareSheet(activityItems: [item.url])
                 .ignoresSafeArea()
+        }
+        .sheet(isPresented: $showEmailShare) {
+            AttendanceEmailShareView(filterDate: filterByDate ? filterDate : nil)
         }
         .onChange(of: showCreateAttendance) { _, isShowing in
             if !isShowing {

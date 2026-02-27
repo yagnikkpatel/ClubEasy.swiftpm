@@ -30,6 +30,7 @@ struct DateWiseAttendanceView: View {
     var onSave: (() -> Void)? = nil
     @State private var students: [Student] = StudentStorage.load()
     @State private var attendance: [UUID: Bool] = [:]
+    @State private var showEmailShare = false
     
     private var formattedDate: String {
         let formatter = DateFormatter()
@@ -76,6 +77,17 @@ struct DateWiseAttendanceView: View {
         .navigationTitle("Attendance")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    Button {
+                        showEmailShare = true
+                    } label: {
+                        Label("Send via Email", systemImage: "envelope")
+                    }
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                }
+            }
             ToolbarItem(placement: .confirmationAction) {
                 Button("Done") {
                     AttendanceStorage.save(date: date, attendance: attendance)
@@ -84,6 +96,9 @@ struct DateWiseAttendanceView: View {
                 }
                 .fontWeight(.semibold)
             }
+        }
+        .sheet(isPresented: $showEmailShare) {
+            AttendanceEmailShareView(filterDate: date)
         }
         .onAppear {
             students = StudentStorage.load()
