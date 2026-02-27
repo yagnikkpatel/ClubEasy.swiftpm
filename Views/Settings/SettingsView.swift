@@ -19,168 +19,19 @@ struct SettingsView: View {
     
     var body: some View {
         List {
-            Section {
-                SettingsRow(
-                    icon: "building.2",
-                    iconColor: .appTheme,
-                    title: "Club Subtitle",
-                    subtitle: clubSubtitle.isEmpty ? nil : clubSubtitle
-                ) {
-                    showClubSubtitleEditor = true
-                }
-                
-                SettingsRow(
-                    icon: "at",
-                    iconColor: .appTheme,
-                    title: "University Domain",
-                    subtitle: emailDomain.isEmpty ? "None" : emailDomain
-                ) {
-                    showDomainEditor = true
-                }
-            } header: {
-                Text("CLUB INFO")
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .foregroundStyle(.secondary)
-            } 
-            
-            Section {
-                SettingsRow(
-                    icon: "envelope",
-                    iconColor: .appTheme,
-                    title: "Default Sender Email",
-                    subtitle: senderEmail.isEmpty ? "None" : senderEmail
-                ) {
-                    showSenderEmailEditor = true
-                }
-                
-                SettingsRow(
-                    icon: "person.2",
-                    iconColor: .appTheme,
-                    title: "Recipient List",
-                    subtitle: "\(recipientEmails.count) recipients"
-                ) {
-                    showRecipientEditor = true
-                }
-                
-                SettingsRow(
-                    icon: "text.quote",
-                    iconColor: .appTheme,
-                    title: "Default Message",
-                    subtitle: boilerplate.isEmpty ? "None" : String(boilerplate.prefix(30)) + (boilerplate.count > 30 ? "..." : "")
-                ) {
-                    showBoilerplateEditor = true
-                }
-            } header: {
-                Text("EMAIL & ATTENDANCE SHARING")
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .foregroundStyle(.secondary)
-            }
-            
-            Section {
-                SettingsRow(
-                    icon: "list.bullet.rectangle",
-                    iconColor: .appTheme,
-                    title: "Custom Fields for Students"
-                ) {
-                    sections = CustomFieldStorage.load()
-                    showCustomFields = true
-                }
-            } header: {
-                Text("STUDENTS")
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .foregroundStyle(.secondary)
-            }
-            
-            Section {
-                NavigationLink {
-                    ReportFormatDetailView()
-                } label: {
-                    HStack(spacing: 12) {
-                        Image(systemName: "doc.text.below.ecg")
-                            .font(.body)
-                            .foregroundStyle(.white)
-                            .frame(width: 28, height: 28)
-                            .background(Color.orange)
-                            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-                        VStack(alignment: .leading, spacing: 1) {
-                            Text("Report Formats")
-                                .font(.body)
-                                .foregroundStyle(.primary)
-                            Text("PDF & Excel Layout Previews")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                }
-            } header: {
-                Text("REPORT EXPORTS")
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .foregroundStyle(.secondary)
-            }
-            
-            Section {
-                Link(destination: URL(string: "https://developer.apple.com/learn/swift-coding-club/")!) {
-                    HStack(spacing: 12) {
-                        Image(systemName: "swift")
-                            .font(.body)
-                            .foregroundStyle(.white)
-                            .frame(width: 28, height: 28)
-                            .background(Color.orange)
-                            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-                        VStack(alignment: .leading, spacing: 1) {
-                            Text("Start Your Club")
-                                .font(.body)
-                                .foregroundStyle(.primary)
-                            Text("Apple Developer Program")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                }
-            } header: {
-                Text("SWIFT CODING CLUB")
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .foregroundStyle(.secondary)
-            } footer: {
-                Text("Do you want to start your swift coding club at your university explore this link")
-            }
-            
-            Section {
-                NavigationLink {
-                    AboutView()
-                } label: {
-                    HStack(spacing: 12) {
-                        Image(systemName: "info.circle")
-                            .font(.body)
-                            .foregroundStyle(.white)
-                            .frame(width: 28, height: 28)
-                            .background(Color.appTheme)
-                            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-                        Text("About")
-                            .font(.body)
-                            .foregroundStyle(.primary)
-                    }
-                }
-            } header: {
-                Text("ABOUT")
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .foregroundStyle(.secondary)
-            }
+            clubInfoSection
+            emailSharingSection
+            studentDataSection
+            reportsSection
+            brandingSection
+            aboutSection
         }
         .listStyle(.insetGrouped)
         .listSectionSpacing(.compact)
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.large)
         .sheet(isPresented: $showCustomFields) {
-            NavigationStack {
-                CustomFieldsSettingsView(sections: $sections)
-            }
+            NavigationStack { CustomFieldsSettingsView(sections: $sections) }
         }
         .sheet(isPresented: $showClubSubtitleEditor) {
             ClubSubtitleEditorView(subtitle: $clubSubtitle)
@@ -197,6 +48,96 @@ struct SettingsView: View {
         .sheet(isPresented: $showBoilerplateEditor) {
             BoilerplateEditorView(boilerplate: $boilerplate)
         }
+    }
+    
+    // MARK: - Sections
+    
+    private var clubInfoSection: some View {
+        Section {
+            SettingsRow(icon: "building.2", title: "Club Subtitle", subtitle: clubSubtitle.isEmpty ? nil : clubSubtitle) {
+                showClubSubtitleEditor = true
+            }
+            SettingsRow(icon: "at", title: "University Domain", subtitle: emailDomain.isEmpty ? "None" : emailDomain) {
+                showDomainEditor = true
+            }
+        } header: {
+            sectionHeader("CLUB INFO")
+        }
+    }
+    
+    private var emailSharingSection: some View {
+        Section {
+            SettingsRow(icon: "envelope", title: "Default Sender Email", subtitle: senderEmail.isEmpty ? "None" : senderEmail) {
+                showSenderEmailEditor = true
+            }
+            SettingsRow(icon: "person.2", title: "Recipient List", subtitle: "\(recipientEmails.count) recipients") {
+                showRecipientEditor = true
+            }
+            SettingsRow(icon: "text.quote", title: "Default Message", subtitle: boilerplateSummary) {
+                showBoilerplateEditor = true
+            }
+        } header: {
+            sectionHeader("EMAIL & ATTENDANCE SHARING")
+        }
+    }
+    
+    private var studentDataSection: some View {
+        Section {
+            SettingsRow(icon: "list.bullet.rectangle", title: "Custom Fields for Students") {
+                sections = CustomFieldStorage.load()
+                showCustomFields = true
+            }
+        } header: {
+            sectionHeader("STUDENTS")
+        }
+    }
+    
+    private var reportsSection: some View {
+        Section {
+            NavigationLink {
+                ReportFormatDetailView()
+            } label: {
+                SettingsRow(icon: "doc.text.below.ecg", iconColor: .orange, title: "Report Formats", subtitle: "PDF & Excel Layout Previews", showChevron: false)
+            }
+        } header: {
+            sectionHeader("REPORT EXPORTS")
+        }
+    }
+    
+    private var brandingSection: some View {
+        Section {
+            Link(destination: URL(string: "https://developer.apple.com/learn/swift-coding-club/")!) {
+                SettingsRow(icon: "swift", iconColor: .orange, title: "Start Your Club", subtitle: "Apple Developer Program")
+            }
+        } header: {
+            sectionHeader("SWIFT CODING CLUB")
+        } footer: {
+            Text("Do you want to start your swift coding club at your university explore this link")
+        }
+    }
+    
+    private var aboutSection: some View {
+        Section {
+            NavigationLink { AboutView() } label: {
+                SettingsRow(icon: "info.circle", title: "About", showChevron: false)
+            }
+        } header: {
+            sectionHeader("ABOUT")
+        }
+    }
+    
+    // MARK: - Helpers
+    
+    private func sectionHeader(_ text: String) -> some View {
+        Text(text)
+            .font(.caption)
+            .fontWeight(.medium)
+            .foregroundStyle(.secondary)
+    }
+    
+    private var boilerplateSummary: String {
+        guard !boilerplate.isEmpty else { return "None" }
+        return String(boilerplate.prefix(30)) + (boilerplate.count > 30 ? "..." : "")
     }
 }
 
@@ -321,56 +262,66 @@ struct SettingsRow: View {
     let iconColor: Color
     let title: String
     let subtitle: String?
-    let action: () -> Void
+    let showChevron: Bool
+    let action: (() -> Void)?
     
     init(
         icon: String,
         iconColor: Color = .appTheme,
         title: String,
         subtitle: String? = nil,
-        action: @escaping () -> Void
+        showChevron: Bool = true,
+        action: (() -> Void)? = nil
     ) {
         self.icon = icon
         self.iconColor = iconColor
         self.title = title
         self.subtitle = subtitle
+        self.showChevron = showChevron
         self.action = action
     }
     
     var body: some View {
-        Button(action: action) {
-            HStack(spacing: 12) {
-                Image(systemName: icon)
+        if let action = action {
+            Button(action: action) {
+                rowContent
+            }
+            .buttonStyle(.plain)
+        } else {
+            rowContent
+        }
+    }
+    
+    private var rowContent: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.body)
+                .foregroundStyle(.white)
+                .frame(width: 28, height: 28)
+                .background(iconColor)
+                .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+            
+            VStack(alignment: .leading, spacing: 1) {
+                Text(title)
                     .font(.body)
-                    .foregroundStyle(.white)
-                    .frame(width: 28, height: 28)
-                    .background(iconColor)
-                    .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                    .foregroundStyle(.primary)
                 
                 if let subtitle {
-                    VStack(alignment: .leading, spacing: 1) {
-                        Text(title)
-                            .font(.body)
-                            .foregroundStyle(.primary)
-                        Text(subtitle)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                } else {
-                    Text(title)
-                        .font(.body)
-                        .foregroundStyle(.primary)
+                    Text(subtitle)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                 }
-                
-                Spacer()
-                
+            }
+            
+            Spacer()
+            
+            if showChevron {
                 Image(systemName: "chevron.right")
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(.tertiary)
             }
-            .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .contentShape(Rectangle())
     }
 }
 
