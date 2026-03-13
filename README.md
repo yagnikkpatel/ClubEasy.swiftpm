@@ -23,15 +23,21 @@ ClubEasy is a modern iOS app for managing a university Swift / coding club. It h
 
 The app opens with a three-step onboarding that introduces the main value of ClubEasy.
 
-![Swift Coding Club intro](images/Simulator%20Screenshot%20-%20iPhone%2017%20Pro%20-%202026-03-13%20at%2022.47.52.png)
+<p align="center">
+<img src="images/Simulator Screenshot - iPhone 17 Pro - 2026-03-13 at 22.47.52.png" alt="Swift Coding Club intro" width="320" />
+</p>
 
 - **Swift Coding Club**: Presents the app as *“The professional management dashboard for your university's developer community.”*
 
-![Professional Reports onboarding](images/Simulator%20Screenshot%20-%20iPhone%2017%20Pro%20-%202026-03-13%20at%2022.47.55.png)
+<p align="center">
+<img src="images/Simulator Screenshot - iPhone 17 Pro - 2026-03-13 at 22.47.55.png" alt="Professional Reports onboarding" width="320" />
+</p>
 
 - **Professional Reports**: Highlights that you can generate industry‑standard PDF and Excel attendance reports for university records.
 
-![Student Success onboarding](images/Simulator%20Screenshot%20-%20iPhone%2017%20Pro%20-%202026-03-13%20at%2022.47.57.png)
+<p align="center">
+<img src="images/Simulator Screenshot - iPhone 17 Pro - 2026-03-13 at 22.47.57.png" alt="Student Success onboarding" width="320" />
+</p>
 
 - **Student Success**: Emphasizes tracking student projects, attendance risk, and top performers in one place.  
   The final screen uses a **Get Started** call to action to enter the main app.
@@ -42,7 +48,9 @@ The app opens with a three-step onboarding that introduces the main value of Clu
 
 Once onboarding is complete, users land on the main dashboard.
 
-![Overview dashboard](images/Simulator%20Screenshot%20-%20iPhone%2017%20Pro%20-%202026-03-13%20at%2022.56.05.png)
+<p align="center">
+<img src="images/Simulator Screenshot - iPhone 17 Pro - 2026-03-13 at 22.56.05.png" alt="Overview dashboard" width="320" />
+</p>
 
 - **Club header**: Shows the club name (e.g. *Swift Coding Club*) and location (*Parul University, Apple Lab, CV Raman*).
 - **Key stats cards**:
@@ -62,7 +70,9 @@ This screen is the high‑level control center for club health.
 
 #### Students List
 
-![Students list](images/Simulator%20Screenshot%20-%20iPhone%2017%20Pro%20-%202026-03-13%20at%2022.52.11.png)
+<p align="center">
+<img src="images/Simulator Screenshot - iPhone 17 Pro - 2026-03-13 at 22.52.11.png" alt="Students list" width="320" />
+</p>
 
 - **Alphabetical sections**: Students are grouped by initial (B, P, S, Y).
 - **Student cards**:
@@ -74,7 +84,9 @@ This screen is the high‑level control center for club health.
 
 #### Student Detail
 
-![Student detail](images/Simulator%20Screenshot%20-%20iPhone%2017%20Pro%20-%202026-03-13%20at%2022.52.39.png)
+<p align="center">
+<img src="images/Simulator Screenshot - iPhone 17 Pro - 2026-03-13 at 22.52.39.png" alt="Student detail" width="320" />
+</p>
 
 - **Profile section**:
   - Large avatar and name
@@ -95,7 +107,9 @@ This screen serves as the single source of truth for student information and com
 
 Creating and tracking attendance is a core workflow in ClubEasy.
 
-![New Attendance calendar](images/Simulator%20Screenshot%20-%20iPhone%2017%20Pro%20-%202026-03-13%20at%2022.52.23.png)
+<p align="center">
+<img src="images/Simulator Screenshot - iPhone 17 Pro - 2026-03-13 at 22.52.23.png" alt="New Attendance calendar" width="320" />
+</p>
 
 - **New Attendance** modal:
   - Calendar picker to choose the session date (e.g. March 13, 2026).
@@ -110,7 +124,9 @@ Creating and tracking attendance is a core workflow in ClubEasy.
 
 Projects help you track what your students are actually building.
 
-![Projects list](images/Simulator%20Screenshot%20-%20iPhone%2017%20Pro%20-%202026-03-13%20at%2022.55.06.png)
+<p align="center">
+<img src="images/Simulator Screenshot - iPhone 17 Pro - 2026-03-13 at 22.55.06.png" alt="Projects list" width="320" />
+</p>
 
 - **Project list**:
   - Each project shows title (e.g. *To Do App*, *Grocery App*, *Quiz App*).
@@ -127,7 +143,9 @@ Project completion and in‑progress counts feed into the Overview’s **Project
 
 The Settings screen controls how the club info and reports are configured.
 
-![Settings screen](images/Simulator%20Screenshot%20-%20iPhone%2017%20Pro%20-%202026-03-13%20at%2022.56.53.png)
+<p align="center">
+<img src="images/Simulator Screenshot - iPhone 17 Pro - 2026-03-13 at 22.56.53.png" alt="Settings screen" width="320" />
+</p>
 
 - **Club Info**:
   - Club Subtitle (e.g. *Parul University, Apple Lab, CV Raman*).
@@ -147,7 +165,7 @@ This configuration layer ensures that ClubEasy can integrate cleanly with your u
 
 ### 7. Email Attendance Report (What the Email Looks Like)
 
-![Email attendance report](images/Screenshot%202026-03-13%20at%2011.04.24 PM.png)
+<img src="images/Screenshot 2026-03-13 at 11.04.24 PM.png" alt="Email attendance report"  />
 
 - **Email body**: Shows a branded attendance report titled *Swift Coding Club* with club location.
 - **Export metadata**: Includes the export date and summary (e.g. *1/1 present*).
